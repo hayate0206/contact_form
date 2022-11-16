@@ -21,18 +21,44 @@ if(isset($_POST['input'])){       // 送信ボタンが押されたかどうか
     $contact = escape($_POST['contact']);
 
     $validation = new Validation();
-    $errors = $validation->allErrorData(
-        $full_name, 
-        $kana, 
-        $phone, 
-        $birth, 
-        $gender, 
-        $mail, 
-        $mail_confirm, 
-        $contact
-    );
-    if(count($errors) == 0){
-        echo 1111;
+    $errors = [];
+    $errorMsg = [
+        $validation->full_name($full_name),
+        $validation->kana($kana),
+        $validation->phone($phone),
+        $validation->birth($birth),
+        $validation->gender($gender),
+        $validation->mail($mail),
+        $validation->mail_confirm($mail_confirm),
+        $validation->mail_match($mail, $mail_confirm),
+        $validation->contact($contact)
+    ];
+    if(array_values($errorMsg) !== "")
+        $errors["full_name"] = $errorMsg[0];
+    if(array_values($errorMsg) !== "")
+        $errors["kana"] = $errorMsg[1];
+    if(array_values($errorMsg) !== "")
+        $errors["phone"] = $errorMsg[2];
+    if(array_values($errorMsg) !== "")
+        $errors["birth"] = $errorMsg[3];
+    if(array_values($errorMsg) !== "")
+        $errors["gender"] = $errorMsg[4];
+    if(array_values($errorMsg) !== "")
+        $errors["mail"] = $errorMsg[5];
+    if(array_values($errorMsg) !== "")
+        $errors["mail_confirm"] = $errorMsg[6];
+    if(array_values($errorMsg) !== "")
+        $errors["mail_match"] = $errorMsg[7];
+    if(array_values($errorMsg) !== "")
+        $errors["contact"] = $errorMsg[8];
+    
+    $error_count = 0;
+    foreach($errors as $key => $value) {
+        if($value !== ''){
+            $error_count++;
+        }
+      }
+    if ($error_count === 0){
         session_start();
         $contact_model = new ContactModel(
             $full_name, 
@@ -49,8 +75,8 @@ if(isset($_POST['input'])){       // 送信ボタンが押されたかどうか
         header('Location: ./confirmation.php');
         exit();
     }
-}
-
+}    
+    
 ?>
 
 <!DOCTYPE html>
@@ -134,11 +160,14 @@ if(isset($_POST['input'])){       // 送信ボタンが押されたかどうか
     </tr>
     <tr>
         <td>メールアドレス確認用<font class="hiss" color="red">必須</font></td>
-        <td><input type="email" name="mail_confirm" size="48" value="<?php if(isset($mail_confirmation)){echo $confirmation;} ?>" placeholder="例）info@example.com"></td>
+        <td><input type="email" name="mail_confirm" size="48" value="<?php if(isset($mail_confirm)){echo $mail_confirm;} ?>" placeholder="例）info@example.com"></td>
         <td>
             <?php
                 if(isset($_POST['input']) && array_key_exists("mail_confirm", $errors)){
                     echo '<p><font color="red">'.$errors['mail_confirm'].'</font></p>';
+                }
+                if (isset($_POST['input']) && array_key_exists("mail_match", $errors)){
+                    echo '<p><font color="red">'.$errors['mail_match'].'</font></p>';
                 }
             ?>
         </td>

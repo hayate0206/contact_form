@@ -40,7 +40,11 @@ class Db{
                     :mail_confirm, 
                     :contact
                 )";
-                var_dump($sql);    
+            
+            //prepareメソッドはプリペアドステートメントと呼ばれるものを利用するための関数です。 
+            //プリペアドステートメントとは、SQL文を最初に用意しておいて、
+            //その後はクエリ内のパラメータの値だけを変更してクエリを実行できる機能
+
             // 挿入する値は空のまま、SQL実行の準備をする
             $stmt = $this->db->prepare($sql);
     
@@ -55,7 +59,6 @@ class Db{
                 ':mail_confirm' => $mail_address_confirm, 
                 ':contact' => $contact_input
             ];
-    
             //　SQLを実行
             $stmt->execute($params);
             
